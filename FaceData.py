@@ -1,10 +1,11 @@
 import cv2
 import numpy as np
-
 from os import path
 
+# Initialize camera
 cap = cv2.VideoCapture(0)
 
+# Load the haar cascade for frontal face
 classifier = cv2.CascadeClassifier("haarcascade_frontalface_default.xml")
 
 name = input("Enter your name : ")
@@ -17,6 +18,7 @@ while True:
     ret, frame = cap.read()
 
     if ret:
+        # Convert frame to grayscale
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
         faces = classifier.detectMultiScale(gray)
@@ -46,17 +48,15 @@ while True:
     if key & 0xff == ord('q'):
         break
 
+# Convert face list to numpy array
 X = np.array(face_list)
 y = np.full((len(X), 1), name)
-
 data = np.hstack([y, X])
-
-print(data.shape)
-print(data.dtype)
 
 cap.release()
 cv2.destroyAllWindows()
 
+# Save the dataset in filesystem
 if path.exists("face_data.npy"):
     face_data = np.load("face_data.npy")
     face_data = np.vstack([face_data, data])
